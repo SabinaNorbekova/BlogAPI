@@ -1,0 +1,17 @@
+# Build va artifactlar
+build
+dist
+coverage
+node_modules
+
+# Config va env
+.env
+knexfile.js
+*.config.js
+
+# IDE
+.vscode
+.idea
+
+# Minified
+*.min.js
