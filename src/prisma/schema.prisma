@@ -1,0 +1,109 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String      @id @default(uuid())
+  email          String      @unique
+  username       String      @unique
+  password       String
+  role           UserRole    @default(author)
+  status         UserStatus  @default(inactive)
+  firstName      String?
+  lastName       String?
+  avatar         String?
+  bio            String?
+  otp            String? // OTP for verification
+  otpExpiresAt   DateTime? // Expiration for OTP
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  RefreshToken   RefreshToken[] // Relation to RefreshToken model
+  Author         Author?     // One-to-one relation with Author model if this user is an author
+}
+
+model Author {
+  id             String      @id @default(uuid())
+  userId         String      @unique // Foreign key to User
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name           String
+  bio            String?
+  avatar         String?
+  posts          Post[]
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  description String?
+  posts       Post[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Tag {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  posts     PostTag[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Post {
+  id          String      @id @default(uuid())
+  title       String
+  content     String
+  authorId    String
+  author      Author      @relation(fields: [authorId], references: [id])
+  categoryId  String
+  category    Category    @relation(fields: [categoryId], references: [id])
+  status      PostStatus  @default(draft)
+  publishedAt DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  tags        PostTag[]
+}
+
+model PostTag {
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tagId  String
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId]) // Composite primary key
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+enum UserRole {
+  author
+  editor
+  admin
+}
+
+enum UserStatus {
+  active
+  inactive
+}
+
+enum PostStatus {
+  draft
+  published
+  archived
+}

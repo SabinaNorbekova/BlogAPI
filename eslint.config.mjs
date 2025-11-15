@@ -1,35 +1,38 @@
+// eslint.config.mjs
 import js from '@eslint/js';
 import globals from 'globals';
-import prettierConfig from 'eslint-config-prettier';
-import prettierPlugin from 'eslint-plugin-prettier';
+import prettier from 'eslint-config-prettier';
 
 export default [
+  {
+    ignores: ['node_modules', 'dist'],
+  },
+
   js.configs.recommended,
-  prettierConfig, // Prettier bilan konfliktlarni o'chiradi
+  prettier,
+
   {
     files: ['**/*.js'],
-    plugins: {
-      prettier: prettierPlugin,
-    },
+
     languageOptions: {
-      ecmaVersion: 2022,
+      ecmaVersion: 2021,
       sourceType: 'module',
       globals: {
         ...globals.node,
-        ...globals.es2021,
       },
     },
+
     rules: {
-      'prettier/prettier': 'error', // Prettier xatolarini ESLint ko'rsatadi
-      'no-unused-vars': 'error',
+      // Prettier bilan to‘qnashishni oldini oladi
+      'prettier/prettier': 'off',
+
+      // Asosiy ESLint qoidalar
+      'no-unused-vars': 'warn',
       'no-undef': 'error',
-      'no-console': 'warn',
+      'no-console': 'off',
       'prefer-const': 'error',
       eqeqeq: 'error',
       'no-var': 'error',
-    },
-    linterOptions: {
-      reportUnusedDisableDirectives: 'error',
     },
   },
 ];
