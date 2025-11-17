@@ -1,7 +1,7 @@
 // server.js
 import 'dotenv/config';
 import express from 'express';
-import authRouter from './routers/auth.routes.js';
+import { authRouter } from './routers/auth.router.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
@@ -15,7 +15,6 @@ app.use('/api/auth', authRouter);
 // app.use("/api/categories", categoryRouter);
 // app.use("/api/tags", tagRouter);
 
-// Global Error Handler
 app.use(errorHandler);
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

@@ -19,6 +19,9 @@ export const errorHandler = (err, req, res, next) => {
   } else if (err.name === 'TokenExpiredError') {
     statusCode = 401;
     message = 'Token expired.';
+  } else if (err.name === 'ZodError') {
+    statusCode = 400;
+    message = 'Validation error.';
   }
 
   res.status(statusCode).json({ message });

@@ -1,10 +1,8 @@
-// schemas/auth.schema.js
+// validation/auth.validation.js
 import { z } from 'zod';
-
 // UserRole va UserStatus enumlari uchun Zod schema
 const UserRoleEnum = z.enum(['author', 'editor', 'admin']);
 const UserStatusEnum = z.enum(['active', 'inactive']);
-
 export const registerSchema = z
   .object({
     email: z.string().email('Invalid email address'),
@@ -21,17 +19,14 @@ export const registerSchema = z
     message: "Passwords don't match",
     path: ['confirmPassword'],
   });
-
 export const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string(),
 });
-
 export const verifyOtpSchema = z.object({
   userId: z.string().uuid('Invalid user ID format'),
-  otp: z.string().length(6, 'OTP must be 6 digits'), // Faraz qilamiz 6 raqamli OTP
+  otp: z.string().length(6, 'OTP must be 6 digits'),
 });
-
 export const refreshTokenSchema = z.object({
   refreshToken: z.string(),
 });

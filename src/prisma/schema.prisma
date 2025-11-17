@@ -24,20 +24,10 @@ model User {
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
   RefreshToken   RefreshToken[] // Relation to RefreshToken model
-  Author         Author?     // One-to-one relation with Author model if this user is an author
+  posts          Post[] // User-Author endi postlar bilan bog'lanadi
 }
 
-model Author {
-  id             String      @id @default(uuid())
-  userId         String      @unique // Foreign key to User
-  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name           String
-  bio            String?
-  avatar         String?
-  posts          Post[]
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-}
+// Author modeli butunlay olib tashlangan
 
 model Category {
   id          String    @id @default(uuid())
@@ -60,8 +50,8 @@ model Post {
   id          String      @id @default(uuid())
   title       String
   content     String
-  authorId    String
-  author      Author      @relation(fields: [authorId], references: [id])
+  authorId    String // Endi bu User.id ga bog'liq bo'ladi
+  author      User        @relation(fields: [authorId], references: [id]) // User bilan bog'lanish
   categoryId  String
   category    Category    @relation(fields: [categoryId], references: [id])
   status      PostStatus  @default(draft)

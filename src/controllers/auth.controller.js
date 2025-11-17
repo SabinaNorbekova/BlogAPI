@@ -29,22 +29,16 @@ export const AuthController = {
 
       const existingUserByEmail = await UserModel.findByEmail(email);
       if (existingUserByEmail) {
-        return res
-          .status(409)
-          .json({
-            message: 'Email already exists. Please use a different email.',
-          });
+        return res.status(409).json({
+          message: 'Email already exists. Please use a different email.',
+        });
       }
-      const existingUserByUsername = await UserModel.findUnique({
-        where: { username },
-      });
+      const existingUserByUsername = await UserModel.findByUsername(username);
       if (existingUserByUsername) {
-        return res
-          .status(409)
-          .json({
-            message:
-              'Username already exists. Please choose a different username.',
-          });
+        return res.status(409).json({
+          message:
+            'Username already exists. Please choose a different username.',
+        });
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -136,19 +130,17 @@ export const AuthController = {
       }
 
       if (user.status === 'inactive') {
-        return res
-          .status(403)
-          .json({
-            message:
-              'Account is not activated. Please verify your email with OTP.',
-          });
+        return res.status(403).json({
+          message:
+            'Account is not activated. Please verify your email with OTP.',
+        });
       }
 
       const accessToken = jwt.sign(
         { id: user.id, role: user.role },
         process.env.JWT_SECRET,
         {
-          expiresIn: process.env.ACCESS_TOKEN_EXPIRY || '15m',
+          expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRY || '15m',
         },
       );
 
@@ -156,12 +148,13 @@ export const AuthController = {
         { id: user.id },
         process.env.REFRESH_TOKEN_SECRET,
         {
-          expiresIn: process.env.REFRESH_TOKEN_EXPIRY || '7d',
+          expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRY || '7d',
         },
       );
 
       const refreshTokenExpiresAt = new Date(
-        Date.now() + parseInt(process.env.REFRESH_TOKEN_EXPIRY_MS || 604800000),
+        Date.now() +
+          (parseInt(process.env.REFRESH_TOKEN_EXPIRY_MS) || 604800000),
       );
       await UserModel.saveRefreshToken(
         user.id,
@@ -243,7 +236,7 @@ export const AuthController = {
         { id: user.id, role: user.role },
         process.env.JWT_SECRET,
         {
-          expiresIn: process.env.ACCESS_TOKEN_EXPIRY || '15m',
+          expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRY || '15m',
         },
       );
 
@@ -251,12 +244,13 @@ export const AuthController = {
         { id: user.id },
         process.env.REFRESH_TOKEN_SECRET,
         {
-          expiresIn: process.env.REFRESH_TOKEN_EXPIRY || '7d',
+          expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRY || '7d',
         },
       );
 
       const refreshTokenExpiresAt = new Date(
-        Date.now() + parseInt(process.env.REFRESH_TOKEN_EXPIRY_MS || 604800000),
+        Date.now() +
+          (parseInt(process.env.REFRESH_TOKEN_EXPIRY_MS) || 604800000),
       );
       await UserModel.saveRefreshToken(
         user.id,
