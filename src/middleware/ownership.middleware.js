@@ -6,7 +6,7 @@ export const checkPostOwnership = async (req, res, next) => {
     const postId = req.params.id;
     const post = await prisma.post.findUnique({
       where: { id: postId },
-      select: { authorId: true }
+      select: { authorId: true },
     });
 
     if (!post) {
@@ -18,7 +18,9 @@ export const checkPostOwnership = async (req, res, next) => {
     const isEditor = req.user.role === 'EDITOR';
 
     if (!isOwner && !isAdmin && !isEditor) {
-      return res.status(403).json({ message: 'You can only edit your own posts' });
+      return res
+        .status(403)
+        .json({ message: 'You can only edit your own posts' });
     }
 
     req.post = post;

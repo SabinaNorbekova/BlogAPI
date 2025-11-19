@@ -87,13 +87,13 @@ export const AuthService = {
     const accessToken = jwt.sign(
       { id: user.id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRY || '15m' }
+      { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRY || '15m' },
     );
 
     const refreshToken = jwt.sign(
       { id: user.id },
       process.env.REFRESH_TOKEN_SECRET,
-      { expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRY || '7d' }
+      { expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRY || '7d' },
     );
 
     return { accessToken, refreshToken };
@@ -101,7 +101,7 @@ export const AuthService = {
 
   async saveRefreshToken(userId, refreshToken) {
     const expiresAt = new Date(
-      Date.now() + (parseInt(process.env.REFRESH_TOKEN_EXPIRY_MS) || 604800000)
+      Date.now() + (parseInt(process.env.REFRESH_TOKEN_EXPIRY_MS) || 604800000),
     );
     await UserModel.saveRefreshToken(userId, refreshToken, expiresAt);
   },

@@ -7,7 +7,7 @@ import {
 } from '../validations/auth.validation.js';
 import { AuthService } from '../services/auth.service.js';
 import jwt from 'jsonwebtoken';
-import z from 'zod'
+import z from 'zod';
 import { UserModel } from '../models/user.model.js';
 
 export const AuthController = {
@@ -29,7 +29,9 @@ export const AuthController = {
         return res.status(409).json({ message: 'Username already exists.' });
       }
       if (err instanceof z.ZodError) {
-        return res.status(400).json({ message: 'Validation error', errors: err.errors });
+        return res
+          .status(400)
+          .json({ message: 'Validation error', errors: err.errors });
       }
       next(err);
     }
@@ -40,11 +42,18 @@ export const AuthController = {
       const { userId, otp } = verifyOtpSchema.parse(req.body);
       await AuthService.verifyOtp(userId, otp);
 
-      return res.status(200).json({ message: 'Account activated successfully' });
+      return res
+        .status(200)
+        .json({ message: 'Account activated successfully' });
     } catch (err) {
-      if (err.message === 'USER_NOT_FOUND') return res.status(404).json({ message: 'User not found' });
-      if (err.message === 'INVALID_OTP') return res.status(400).json({ message: 'Invalid or expired OTP' });
-      if (err instanceof z.ZodError) return res.status(400).json({ message: 'Validation error', errors: err.errors });
+      if (err.message === 'USER_NOT_FOUND')
+        return res.status(404).json({ message: 'User not found' });
+      if (err.message === 'INVALID_OTP')
+        return res.status(400).json({ message: 'Invalid or expired OTP' });
+      if (err instanceof z.ZodError)
+        return res
+          .status(400)
+          .json({ message: 'Validation error', errors: err.errors });
       next(err);
     }
   },
@@ -57,11 +66,22 @@ export const AuthController = {
       const { accessToken, refreshToken } = AuthService.generateTokens(user);
       await AuthService.saveRefreshToken(user.id, refreshToken);
 
-      return res.json({ message: 'Login successful', accessToken, refreshToken });
+      return res.json({
+        message: 'Login successful',
+        accessToken,
+        refreshToken,
+      });
     } catch (err) {
-      if (err.message === 'INVALID_CREDENTIALS') return res.status(401).json({ message: 'Invalid credentials' });
-      if (err.message === 'ACCOUNT_NOT_ACTIVATED') return res.status(403).json({ message: 'Please verify your email first' });
-      if (err instanceof z.ZodError) return res.status(400).json({ message: 'Validation error', errors: err.errors });
+      if (err.message === 'INVALID_CREDENTIALS')
+        return res.status(401).json({ message: 'Invalid credentials' });
+      if (err.message === 'ACCOUNT_NOT_ACTIVATED')
+        return res
+          .status(403)
+          .json({ message: 'Please verify your email first' });
+      if (err instanceof z.ZodError)
+        return res
+          .status(400)
+          .json({ message: 'Validation error', errors: err.errors });
       next(err);
     }
   },
@@ -92,21 +112,26 @@ export const AuthController = {
       const { refreshToken: oldToken } = refreshTokenSchema.parse(req.body);
 
       const stored = await UserModel.findRefreshToken(oldToken);
-      if (!stored) return res.status(403).json({ message: 'Invalid refresh token' });
+      if (!stored)
+        return res.status(403).json({ message: 'Invalid refresh token' });
 
       const decoded = jwt.verify(oldToken, process.env.REFRESH_TOKEN_SECRET);
-      if (decoded.id !== stored.userId) return res.status(403).json({ message: 'Invalid token' });
+      if (decoded.id !== stored.userId)
+        return res.status(403).json({ message: 'Invalid token' });
 
       await UserModel.deleteRefreshToken(oldToken);
 
       const user = await UserModel.findById(decoded.id);
-      const { accessToken, refreshToken: newToken } = AuthService.generateTokens(user);
+      const { accessToken, refreshToken: newToken } =
+        AuthService.generateTokens(user);
       await AuthService.saveRefreshToken(user.id, newToken);
 
       return res.json({ accessToken, refreshToken: newToken });
     } catch (err) {
-      if (err instanceof jwt.JsonWebTokenError) return res.status(403).json({ message: 'Invalid token' });
-      if (err instanceof z.ZodError) return res.status(400).json({ message: 'Validation error' });
+      if (err instanceof jwt.JsonWebTokenError)
+        return res.status(403).json({ message: 'Invalid token' });
+      if (err instanceof z.ZodError)
+        return res.status(400).json({ message: 'Validation error' });
       next(err);
     }
   },
