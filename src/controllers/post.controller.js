@@ -30,15 +30,15 @@ export const PostController = {
     }
   },
 
-  async getById(req,res,next){
-    try{
-      const post =await PostService.getPostById(req.params.id, req.user)
-      return res.json(post)
-    }catch(err){
-      if(err.status){
-        return res.status(err.status).json({message:err.message})
+  async getById(req, res, next) {
+    try {
+      const post = await PostService.getPostById(req.params.id, req.user);
+      return res.json(post);
+    } catch (err) {
+      if (err.status) {
+        return res.status(err.status).json({ message: err.message });
       }
-      next(err)
+      next(err);
     }
   },
 

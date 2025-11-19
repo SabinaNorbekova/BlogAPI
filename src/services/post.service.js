@@ -47,36 +47,40 @@ export const PostService = {
     return { posts, total, page, totalPages: Math.ceil(total / limit) };
   },
 
-  async getPostById(postId,userId){
-    const post=await prisma.post.findUnique({
-      where:{id:postId},
-      include:{
-        author:{
-          select:{
-            id:true,
-            username:true,
-            firstName:true,
-            lastName:true,
-            avatar:true,
-            bio:true
-          }
+  async getPostById(postId, userId) {
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+      include: {
+        author: {
+          select: {
+            id: true,
+            username: true,
+            firstName: true,
+            lastName: true,
+            avatar: true,
+            bio: true,
+          },
         },
-        category:true,
-        tags:{
-          include:{
-            tag:true
-          }
-        }
-      }
+        category: true,
+        tags: {
+          include: {
+            tag: true,
+          },
+        },
+      },
     });
-    if(!post){
-      throw {status:404, message:'Post topilmadi'}
+    if (!post) {
+      throw { status: 404, message: 'Post topilmadi' };
     }
 
-    if (post.status==='draft'&&post.authorId!==userId&&userId.role!=='ADMIN'){
-      throw {status:403, message:'Bu post hali e`lon qilinmagan'}
+    if (
+      post.status === 'draft' &&
+      post.authorId !== userId &&
+      userId.role !== 'ADMIN'
+    ) {
+      throw { status: 403, message: 'Bu post hali e`lon qilinmagan' };
     }
-    return post
+    return post;
   },
 
   async update(postId, userId, data) {

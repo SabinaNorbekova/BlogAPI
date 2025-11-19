@@ -10,7 +10,7 @@ router.use(protect);
 
 router.post('/', PostController.create);
 router.get('/my', PostController.getMyPosts);
-router.get('/:id', PostController.getById)
+router.get('/:id', PostController.getById);
 router.put('/:id', checkPostOwnership, PostController.update);
 router.delete('/:id', checkPostOwnership, PostController.delete);
 
