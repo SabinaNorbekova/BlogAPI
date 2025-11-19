@@ -52,8 +52,8 @@ model Post {
   content     String
   authorId    String // Endi bu User.id ga bog'liq bo'ladi
   author      User        @relation(fields: [authorId], references: [id]) // User bilan bog'lanish
-  categoryId  String
-  category    Category    @relation(fields: [categoryId], references: [id])
+  categoryId  String?
+  category    Category?    @relation(fields: [categoryId], references: [id])
   status      PostStatus  @default(draft)
   publishedAt DateTime?
   createdAt   DateTime    @default(now())
