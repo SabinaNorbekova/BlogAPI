@@ -15,7 +15,7 @@ app.use(express.json());
 app.use('/api/auth', authRouter);
 app.use('/api/posts', postRouter);
 app.use('/api/categories', categoryRouter);
-app.use("/api/tags", tagRouter);
+app.use('/api/tags', tagRouter);
 
 app.use(errorHandler);
 
